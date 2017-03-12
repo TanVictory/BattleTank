@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "BattleTank.h"
+#include "TankBarrel.h"
 #include "TankAimingComponent.h"
 
 
@@ -58,14 +59,19 @@ void UTankAimingComponent::AimAt(FVector & HitLocation,float LaunchSpeed)
 		)
 	{
 		auto AimAtSpeed = OutLaunchVelocity.GetSafeNormal();
-		UE_LOG(LogTemp, Warning, TEXT("%s Aiming At is : %s"),*GetOwner()->GetName(), *AimAtSpeed.ToString());
+		
 		MoveBarrelTowards(AimAtSpeed);
-		//TODO MoveBarrel()
-			//
+		auto Time = GetWorld()->GetTimeSeconds();
+		//UE_LOG(LogTemp, Warning, TEXT("%f AimSolution found"), Time);
+	}
+	else
+	{
+		auto Time = GetWorld()->GetTimeSeconds();
+		//UE_LOG(LogTemp, Warning, TEXT("%f AimSolution not found"), Time);
 	}
 }
 
-void UTankAimingComponent::SetBarrelReference(UStaticMeshComponent * BarrelToSet)
+void UTankAimingComponent::SetBarrelReference(UTankBarrel * BarrelToSet)
 {
 	Barrel = BarrelToSet;
 }
@@ -76,9 +82,8 @@ void UTankAimingComponent::MoveBarrelTowards(FVector AimDirection)
 	auto BarrelRotator = Barrel->GetForwardVector().Rotation();
 	auto AimAsRotator = AimDirection.Rotation();
 	auto DeltaRotator = AimAsRotator - BarrelRotator;
-	UE_LOG(LogTemp, Warning, TEXT("%s AimDirection  is : %s"), *GetOwner()->GetName(), *AimAsRotator.ToString());
-	UE_LOG(LogTemp, Warning, TEXT("%s BarrelRotator  is : %s"), *GetOwner()->GetName(), *BarrelRotator.ToString());
+	//UE_LOG(LogTemp, Warning, TEXT("%s AimDirection  is : %s"), *GetOwner()->GetName(), *AimAsRotator.ToString());
+	UE_LOG(LogTemp, Warning, TEXT("%s DeltaRotator.Pitch  is : %f"), *GetOwner()->GetName(), DeltaRotator.Pitch);
 
-	//Move the barrel the right amount this frame
-	//Given a max elevation speed, and the frame time
+	Barrel->Elevate(DeltaRotator.Pitch); //TODO remove magic number
 }
