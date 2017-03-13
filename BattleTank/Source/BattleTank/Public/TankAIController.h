@@ -28,5 +28,5 @@ private:
 
 	ATank* GetPlayerTank() const;
 
-	bool AimatPlayer() const;
+
 };
