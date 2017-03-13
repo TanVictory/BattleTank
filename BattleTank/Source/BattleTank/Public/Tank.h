@@ -10,7 +10,7 @@ class UTankBarrel;
 class UTankTurret;
 class UTankAimingComponent;
 class AProjectile;
-
+class UTankMovementComponent;
 
 UCLASS()
 class BATTLETANK_API ATank : public APawn
@@ -35,7 +35,8 @@ protected:
 
 	UTankAimingComponent* TankAimingComponent = nullptr;
 
-	
+	UPROPERTY(BlueprintReadOnly, Category = "Setup Input")
+	UTankMovementComponent* TankMovementComponent = nullptr;
 
 public:	
 
@@ -57,6 +58,7 @@ private:
 	//Local barrel reference for spawning projectile
 	UTankBarrel* Barrel = nullptr;
 
+	UPROPERTY(EditAnywhere, Category = "Firing")
 	float FireCooldown = 3.f;
 
 	float LastFireTime = 0;

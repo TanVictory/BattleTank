@@ -10,15 +10,7 @@ void ATankPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 
-	auto ControlledTank = GetControlledTank();
-	if (ControlledTank)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("ControlledPawn is :%s"),*ControlledTank->GetName());
-	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("No ControlledPawn found"));
-	}
+	
 }
 
 void ATankPlayerController::Tick(float Deltatime)

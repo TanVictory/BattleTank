@@ -28,5 +28,5 @@ private:
 
 	ATank* GetPlayerTank() const;
 
-
+	ATank* PossessedTank;
 };
