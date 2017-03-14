@@ -29,4 +29,7 @@ private:
 	ATank* GetPlayerTank() const;
 
 	ATank* PossessedTank;
+
+	//How close can AITank Get
+	float AcceptanceRadius = 3000.f;
 };

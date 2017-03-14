@@ -24,10 +24,10 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Setup Input")
 	void Initialise(UTankTrack* LeftTrackToSet, UTankTrack* RightTrackToSet);
-
-
 		
 private:
+	/** path following: request new velocity Called from the pathfinding logic by the AI controllers*/
+	virtual void RequestDirectMove(const FVector& MoveVelocity, bool bForceMaxSpeed) override;
 	UTankTrack* LeftTrack = nullptr;
 	UTankTrack* RightTrack = nullptr;
 };
