@@ -28,9 +28,14 @@ public:
 
 	void AimAt(FVector& HitLocation,float LaunchSpeed);
 
-	void SetBarrelReference(UTankBarrel* BarrelToSet);
+	UFUNCTION(BlueprintCallable, Category = "Setup")
+	void Initialise(UTankBarrel* BarrelToSet, UTankTurret* TurretToSet);
 
-	void SetTurretReference(UTankTurret* TurretToSet);
+    UTankBarrel* Barrel = nullptr;
+
+	UTankTurret* Turret = nullptr;
+
+	
 
 protected:
 	// Called when the game starts
@@ -39,9 +44,7 @@ protected:
     UPROPERTY(BlueprintReadOnly,Category = "State")
 	EFiringStatus FiringStatus = EFiringStatus::Reloading;
 private:
-	UTankBarrel* Barrel = nullptr;
-
-	UTankTurret* Turret = nullptr;
+	
 	
 	float ProjectileLaunchSpeed = 0.f;
 

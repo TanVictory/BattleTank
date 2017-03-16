@@ -4,7 +4,6 @@
 #include "TankAimingComponent.h"
 #include "TankBarrel.h"
 #include "Projectile.h"
-#include "TankMovementComponent.h"
 #include "Tank.h"
 
 
@@ -13,46 +12,26 @@ ATank::ATank()
 {
  	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
-
-	//No need to protect points as added at construction
-	TankAimingComponent = CreateDefaultSubobject<UTankAimingComponent>(FName("Aiming Component"));
 	
-	
+	UE_LOG(LogTemp, Warning, TEXT("Donkey :c++ Construct"));
 }
 
-
-
-void ATank::SetBarrelReference(UTankBarrel * BarrelToSet)
-{
-	TankAimingComponent->SetBarrelReference(BarrelToSet);
-	Barrel = BarrelToSet;
-}
-
-void ATank::SetTurretReference(UTankTurret * TurretToSet)
-{
-	TankAimingComponent->SetTurretReference(TurretToSet);
-}
 
 // Called when the game starts or when spawned
 void ATank::BeginPlay()
 {
 	Super::BeginPlay();
-
+	TankAimingComponent = FindComponentByClass<UTankAimingComponent>();
+	UE_LOG(LogTemp, Warning, TEXT("Donkey :c++ beginplay"));
 }
 
 
-
-// Called to bind functionality to input
-void ATank::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
-}
 
 void ATank::Fire()
 {
+	if (!ensure(Barrel)) { return; }
 	bool IsReadyToFire = (GetWorld()->GetTimeSeconds() - LastFireTime) > FireCooldown;
-	if (Barrel&&IsReadyToFire) {  
+	if (IsReadyToFire) {  
 	auto SpawnLocation = Barrel->GetSocketLocation(FName("FirePoint"));
 	auto SpawnRotation = Barrel->GetSocketRotation(FName("FirePoint"));
 	auto Projectile = GetWorld()->SpawnActor<AProjectile>(ProjectileBlueprint, SpawnLocation, SpawnRotation);
@@ -67,5 +46,6 @@ void ATank::Fire()
 
 void ATank::AimAt(FVector& HitLocation)
 {
+	if (!ensure(TankAimingComponent)) { return; }
 	TankAimingComponent->AimAt(HitLocation,LaunchSpeed);
 }

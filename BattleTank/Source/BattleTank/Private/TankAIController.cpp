@@ -3,6 +3,7 @@
 #include "BattleTank.h"
 #include "Tank.h"
 #include "TankAIController.h"
+//Depends on movement component via pathfinding system
 
 void ATankAIController::BeginPlay()
 {
@@ -14,12 +15,12 @@ void ATankAIController::BeginPlay()
 void ATankAIController::Tick(float DeltaTime)//TODO 想AITank等3秒再FIRE （现在是立即开火）
 {
 	Super::Tick(DeltaTime);
-	if (GetPlayerTank())
+	if (ensure(GetPlayerTank()))
 	{
 		MoveToActor(GetPlayerTank(), AcceptanceRadius);
 
 	auto PlayerTankLocation = GetPlayerTank()->GetActorLocation();
-	if (GetPossessedTank())
+	if (ensure(GetPossessedTank()))
 	{
 	GetPossessedTank()->AimAt(PlayerTankLocation);
 	GetPossessedTank()->Fire();
@@ -36,7 +37,7 @@ ATank* ATankAIController::GetPossessedTank() const
 	if (GetPawn()){ return Cast<ATank>(GetPawn());}
 	else 
 	{
-		//UE_LOG(LogTemp, Warning, TEXT(" %f NoAIPawn found!"),GetWorld()->GetTimeSeconds());
+		
 		return nullptr; 
 	}
 }

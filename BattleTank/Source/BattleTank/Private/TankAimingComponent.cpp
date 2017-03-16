@@ -16,6 +16,12 @@ UTankAimingComponent::UTankAimingComponent()
 	// ...
 }
 
+void UTankAimingComponent::Initialise(UTankBarrel * BarrelToSet, UTankTurret * TurretToSet)
+{
+	Barrel = BarrelToSet;
+	Turret = TurretToSet;
+}
+
 
 // Called when the game starts
 void UTankAimingComponent::BeginPlay()
@@ -26,12 +32,10 @@ void UTankAimingComponent::BeginPlay()
 	
 }
 
-
-
 void UTankAimingComponent::AimAt(FVector & HitLocation,float LaunchSpeed)
 {
 	ProjectileLaunchSpeed = LaunchSpeed;
-	if (!Barrel) { return; }
+	if (!ensure(Barrel)) { return; }
 
 	FVector OutLaunchVelocity;
 	FVector StartLocation = Barrel->GetSocketLocation(FName("FirePoint"));
@@ -63,18 +67,9 @@ void UTankAimingComponent::AimAt(FVector & HitLocation,float LaunchSpeed)
 	}
 }
 
-void UTankAimingComponent::SetBarrelReference(UTankBarrel * BarrelToSet)
-{
-	Barrel = BarrelToSet;
-}
-
-void UTankAimingComponent::SetTurretReference(UTankTurret* TurretToSet)
-{
-	Turret = TurretToSet;
-}
-
 void UTankAimingComponent::MoveBarrelTowards(FVector AimDirection)
 {
+	if(!ensure(Turret&&Barrel)){ return; }//if (!ensure(Turret)||!ensure(Barrel))
 	//Work-out different between current barrel rotation,and AimDirection
 	auto BarrelRotator = Barrel->GetForwardVector().Rotation();
 	auto AimAsRotator = AimDirection.Rotation();
