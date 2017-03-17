@@ -32,8 +32,9 @@ void ATankPlayerController::Tick(float Deltatime)
 
 void ATankPlayerController::AimTowardsCrosshair()
 {
-	auto ControlledTank = GetPawn();
-	if (!ensure(ControlledTank)) { return; }
+	if (!GetPawn()) { return; }
+	auto AimingComponent = GetPawn()->FindComponentByClass<UTankAimingComponent>();
+	if (!ensure(AimingComponent)) { return; }
 
 	FVector HitLocation; //Out parameter
 	if (GetSightRayHitLocation(HitLocation))
@@ -82,6 +83,7 @@ bool ATankPlayerController::GetLookVectorHitLocation(FVector & LookDirection, FV
 	if (GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECC_Visibility))
 	{
 		HitLocation = HitResult.Location;
+		
 		return true;
 	}
 	return false;

@@ -27,6 +27,13 @@ public:
 	// Sets default values for this component's properties
 	UTankAimingComponent();
 
+	virtual void TickComponent
+	(
+		float DeltaTime,
+		enum ELevelTick TickType,
+		FActorComponentTickFunction * ThisTickFunction
+	)override;
+
 	void AimAt(FVector& HitLocation,float LaunchSpeed);
 
 	UFUNCTION(BlueprintCallable, Category = "Firing")
@@ -42,16 +49,14 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Setup")
 	float ProjectileLaunchSpeed = 6000.f;
 
+    UPROPERTY(BlueprintReadOnly,Category = "State")
+	EFiringStatus FiringStatus = EFiringStatus::Reloading;
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
-    UPROPERTY(BlueprintReadOnly,Category = "State")
-	EFiringStatus FiringStatus = EFiringStatus::Reloading;
-private:
-	
-	
 
+private:
 
 	void MoveBarrelTowards(FVector AimDirection);
 

@@ -12,11 +12,12 @@ UTankAimingComponent::UTankAimingComponent()
 {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
-	PrimaryComponentTick.bCanEverTick = false;
-
+	PrimaryComponentTick.bCanEverTick = true;
+	
 	//UE_LOG(LogTemp,Warning,TEXT("Donkey :Component Construct"))
 	// ...
 }
+
 
 void UTankAimingComponent::Initialise(UTankBarrel * BarrelToSet, UTankTurret * TurretToSet)
 {
@@ -28,10 +29,19 @@ void UTankAimingComponent::Initialise(UTankBarrel * BarrelToSet, UTankTurret * T
 // Called when the game starts
 void UTankAimingComponent::BeginPlay()
 {
-	Super::BeginPlay();
+	//Super::BeginPlay();
 
 	// ...
 	//UE_LOG(LogTemp, Warning, TEXT("Donkey :Component BeginPlay"))
+}
+
+void UTankAimingComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction * ThisTickFunction)
+{
+	//UE_LOG(LogTemp, Warning, TEXT("Tick Tick"))
+	if ((GetWorld()->GetTimeSeconds() - LastFireTime) > FireCooldown)
+	{
+		FiringStatus = EFiringStatus::Aiming;
+	}
 }
 
 void UTankAimingComponent::AimAt(FVector & HitLocation,float LaunchSpeed)
@@ -87,13 +97,15 @@ void UTankAimingComponent::MoveBarrelTowards(FVector AimDirection)
 void UTankAimingComponent::Fire()
 {
 	if (!ensure(Barrel)) { return; }
-	bool IsReadyToFire = (GetWorld()->GetTimeSeconds() - LastFireTime) > FireCooldown;
-	if (IsReadyToFire) {
+	
+	//bool IsReadyToFire = (GetWorld()->GetTimeSeconds() - LastFireTime) > FireCooldown;
+	if (FiringStatus!=(EFiringStatus::Reloading)) {
 		auto SpawnLocation = Barrel->GetSocketLocation(FName("FirePoint"));
 		auto SpawnRotation = Barrel->GetSocketRotation(FName("FirePoint"));
 		auto Projectile = GetWorld()->SpawnActor<AProjectile>(ProjectileBlueprint, SpawnLocation, SpawnRotation);
 		Projectile->LaunchProjectile(ProjectileLaunchSpeed);
 		LastFireTime = GetWorld()->GetTimeSeconds();
+		FiringStatus = EFiringStatus::Reloading;
 	}
 	else
 	{
