@@ -3,6 +3,7 @@
 #include "BattleTank.h"
 #include "TankBarrel.h"
 #include "TankTurret.h"
+#include "Projectile.h"
 #include "TankAimingComponent.h"
 
 
@@ -13,6 +14,7 @@ UTankAimingComponent::UTankAimingComponent()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = false;
 
+	//UE_LOG(LogTemp,Warning,TEXT("Donkey :Component Construct"))
 	// ...
 }
 
@@ -29,12 +31,12 @@ void UTankAimingComponent::BeginPlay()
 	Super::BeginPlay();
 
 	// ...
-	
+	//UE_LOG(LogTemp, Warning, TEXT("Donkey :Component BeginPlay"))
 }
 
 void UTankAimingComponent::AimAt(FVector & HitLocation,float LaunchSpeed)
 {
-	ProjectileLaunchSpeed = LaunchSpeed;
+	
 	if (!ensure(Barrel)) { return; }
 
 	FVector OutLaunchVelocity;
@@ -80,4 +82,21 @@ void UTankAimingComponent::MoveBarrelTowards(FVector AimDirection)
 	Turret->RotateTurret(DeltaRotator.Yaw);
 	Barrel->Elevate(DeltaRotator.Pitch); 
 
+}
+
+void UTankAimingComponent::Fire()
+{
+	if (!ensure(Barrel)) { return; }
+	bool IsReadyToFire = (GetWorld()->GetTimeSeconds() - LastFireTime) > FireCooldown;
+	if (IsReadyToFire) {
+		auto SpawnLocation = Barrel->GetSocketLocation(FName("FirePoint"));
+		auto SpawnRotation = Barrel->GetSocketRotation(FName("FirePoint"));
+		auto Projectile = GetWorld()->SpawnActor<AProjectile>(ProjectileBlueprint, SpawnLocation, SpawnRotation);
+		Projectile->LaunchProjectile(ProjectileLaunchSpeed);
+		LastFireTime = GetWorld()->GetTimeSeconds();
+	}
+	else
+	{
+		return;
+	}
 }

@@ -10,7 +10,7 @@
  * 
  */
 
-class ATank;
+
 
 UCLASS()
 class BATTLETANK_API ATankAIController : public AAIController
@@ -24,11 +24,6 @@ protected:
 	virtual void BeginPlay() override;
 	
 private:
-	ATank* GetPossessedTank() const;
-
-	ATank* GetPlayerTank() const;
-
-	ATank* PossessedTank;
 
 	//How close can AITank Get
 	float AcceptanceRadius = 3000.f;

@@ -10,7 +10,6 @@
  * Responsible for helping the player aim
  */
 
-class ATank;
 class ATankAimingComponent;
 
 UCLASS()
@@ -32,8 +31,6 @@ public:
 	float CrossHairYLocation = 0.333333f;
 
 protected:
-	UFUNCTION(BlueprintCallable,Category = "Setup")
-	ATank* GetControlledTank() const;
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "Setup")
 	void FoundAimingComponent(UTankAimingComponent* AimCompRef);

@@ -1,7 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "BattleTank.h"
-#include "Tank.h"
 #include "TankAimingComponent.h"
 #include "TankPlayerController.h"
 
@@ -11,7 +10,9 @@ void ATankPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 
-	auto AimingComponent = GetControlledTank()->FindComponentByClass<UTankAimingComponent>();
+	auto ControlledTank =GetPawn();
+	if (!ensure(ControlledTank)) { return; }
+	auto AimingComponent = ControlledTank->FindComponentByClass<UTankAimingComponent>(); 
 	if (ensure(AimingComponent))
 	{
 		FoundAimingComponent(AimingComponent);
@@ -28,14 +29,11 @@ void ATankPlayerController::Tick(float Deltatime)
 	AimTowardsCrosshair();
 }
 
-ATank * ATankPlayerController::GetControlledTank() const
-{
-	return Cast<ATank>(GetPawn());
-}
 
 void ATankPlayerController::AimTowardsCrosshair()
 {
-	if (!ensure(GetControlledTank())) { return; }
+	auto ControlledTank = GetPawn();
+	if (!ensure(ControlledTank)) { return; }
 
 	FVector HitLocation; //Out parameter
 	if (GetSightRayHitLocation(HitLocation))
@@ -49,6 +47,10 @@ void ATankPlayerController::AimTowardsCrosshair()
 
 bool ATankPlayerController::GetSightRayHitLocation(FVector& HitLocation)const
 {
+	auto ControlledTank = GetPawn();
+	if (!ensure(ControlledTank)) { return false; }
+	auto AimComp = ControlledTank->FindComponentByClass<UTankAimingComponent>();
+	if (!ensure(AimComp)) { return false; }
 	//Find the crosshhair position in pixel coordinates
 	int32 ViewportSizeX, ViewportSizeY;
 	GetViewportSize(ViewportSizeX, ViewportSizeY);
@@ -67,7 +69,7 @@ bool ATankPlayerController::GetSightRayHitLocation(FVector& HitLocation)const
 	//line-trace along that look direction , and see what we hit(up to max range)
 	if (GetLookVectorHitLocation(WorldDirection, HitLocation))
 	{
-		GetControlledTank()->AimAt(HitLocation);
+		AimComp->AimAt(HitLocation,AimComp->ProjectileLaunchSpeed);
 	}
 	return true;
 }
