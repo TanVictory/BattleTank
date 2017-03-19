@@ -22,8 +22,10 @@ public:
 protected:
 	virtual void BeginPlay() override;
 	
+	//How close can AITank Get
+	UPROPERTY(EditAnywhere, Category = "Setup")
+	float AcceptanceRadius = 3000.f;
 private:
 
-	//How close can AITank Get
-	float AcceptanceRadius = 3000.f;
+
 };

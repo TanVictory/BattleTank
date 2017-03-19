@@ -26,6 +26,11 @@ void UTankAimingComponent::Initialise(UTankBarrel * BarrelToSet, UTankTurret * T
 }
 
 
+int32 UTankAimingComponent::GetRoundsLeft() const
+{
+	return RoundsLeft;
+}
+
 // Called when the game starts
 void UTankAimingComponent::BeginPlay()
 {
@@ -38,9 +43,15 @@ void UTankAimingComponent::BeginPlay()
 void UTankAimingComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction * ThisTickFunction)
 {
 	//UE_LOG(LogTemp, Warning, TEXT("Tick Tick"))
-	if ((GetWorld()->GetTimeSeconds() - LastFireTime) > FireCooldown)
+	if (RoundsLeft <= 0)
+	{
+		RoundsLeft = 0;
+		FiringStatus = EFiringStatus::Reloading;
+	}
+	else if ((GetWorld()->GetTimeSeconds() - LastFireTime) > FireCooldown)
 	{
 		FiringStatus = EFiringStatus::Aiming;
+				
 	}
 }
 
@@ -87,9 +98,21 @@ void UTankAimingComponent::MoveBarrelTowards(FVector AimDirection)
 	auto AimAsRotator = AimDirection.Rotation();
 	auto DeltaRotator = AimAsRotator - BarrelRotator;
 	//UE_LOG(LogTemp, Warning, TEXT("%s AimDirection  is : %s"), *GetOwner()->GetName(), *AimAsRotator.ToString());
-	//UE_LOG(LogTemp, Warning, TEXT("%s DeltaRotator.Pitch  is : %f"), *GetOwner()->GetName(), DeltaRotator.Pitch);
+	//UE_LOG(LogTemp, Warning, TEXT("%s DeltaRotator.Pitch  is : %f"), *GetOwner()->GetName(), DeltaRotator.Yaw);
 	
-	Turret->RotateTurret(DeltaRotator.Yaw);
+	if (FMath::Abs<float>(DeltaRotator.Yaw) < 180)
+	{
+		Turret->RotateTurret(DeltaRotator.Yaw);
+	}
+	else if(DeltaRotator.Yaw>180)
+	{
+		Turret->RotateTurret(DeltaRotator.Yaw-360.f);
+	}
+	else if (DeltaRotator.Yaw < -180)
+	{
+		Turret->RotateTurret(DeltaRotator.Yaw + 360.f);
+	}
+	
 	Barrel->Elevate(DeltaRotator.Pitch); 
 
 }
@@ -98,17 +121,22 @@ void UTankAimingComponent::Fire()
 {
 	if (!ensure(Barrel)) { return; }
 	
+
+	
 	//bool IsReadyToFire = (GetWorld()->GetTimeSeconds() - LastFireTime) > FireCooldown;
-	if (FiringStatus!=(EFiringStatus::Reloading)) {
+	if (FiringStatus == EFiringStatus::Locked|| FiringStatus == EFiringStatus::Aiming)
+	{
 		auto SpawnLocation = Barrel->GetSocketLocation(FName("FirePoint"));
 		auto SpawnRotation = Barrel->GetSocketRotation(FName("FirePoint"));
 		auto Projectile = GetWorld()->SpawnActor<AProjectile>(ProjectileBlueprint, SpawnLocation, SpawnRotation);
 		Projectile->LaunchProjectile(ProjectileLaunchSpeed);
 		LastFireTime = GetWorld()->GetTimeSeconds();
 		FiringStatus = EFiringStatus::Reloading;
+		RoundsLeft--;
 	}
 	else
 	{
 		return;
 	}
+	
 }

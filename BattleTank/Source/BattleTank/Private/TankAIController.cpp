@@ -32,9 +32,13 @@ void ATankAIController::Tick(float DeltaTime)//TODO 想AITank等3秒再FIRE （现在是
 	}
 	else
 	{
+		auto FireRadius = (PlayerTankLocation - PossessedTank->GetActorLocation()).Size();
+		
+		if(FMath::Abs<float>(FireRadius)<=AcceptanceRadius)
+		{ 
 		AimComp->AimAt(PlayerTankLocation,AimComp->ProjectileLaunchSpeed);
 		AimComp->Fire();
-	   
+	    }
 	}
 	 }
 	}

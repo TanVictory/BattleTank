@@ -51,6 +51,9 @@ public:
 
     UPROPERTY(BlueprintReadOnly,Category = "State")
 	EFiringStatus FiringStatus = EFiringStatus::Reloading;
+
+	UFUNCTION(BlueprintCallable, Category = "Firing")
+	int32 GetRoundsLeft() const;
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
@@ -65,7 +68,10 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = "Firing")
 	float FireCooldown = 3.f; //
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Firing")
+	int32 RoundsLeft = 3;
 
 	float LastFireTime = 0;
-	
+
 };
