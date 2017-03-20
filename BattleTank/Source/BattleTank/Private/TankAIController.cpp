@@ -3,6 +3,7 @@
 #include "BattleTank.h"
 #include "TankAimingComponent.h"
 #include "TankAIController.h"
+#include "Tank.h"
 //Depends on movement component via pathfinding system
 
 void ATankAIController::BeginPlay()
@@ -10,6 +11,25 @@ void ATankAIController::BeginPlay()
 	Super::BeginPlay();
 
 	
+}
+
+void ATankAIController::SetPawn(APawn * InPawn)
+{
+	Super::SetPawn(InPawn);
+	if (InPawn)
+	{
+		auto PossessedTank = Cast<ATank>(InPawn);
+		if (!ensure(PossessedTank)) { return; }
+
+		//Subscribe our local method to the tank gameover event
+		PossessedTank->GameOver.AddUniqueDynamic(this,&ATankAIController::OnPossessedTankGameOver);
+	}
+}
+
+void ATankAIController::OnPossessedTankGameOver()
+{
+	if (!(GetPawn())) { return; }
+	GetPawn()->DetachFromControllerPendingDestroy();
 }
 
 void ATankAIController::Tick(float DeltaTime)//TODO 想AITank等3秒再FIRE （现在是立即开火）

@@ -30,6 +30,8 @@ public:
 	UPROPERTY(EditAnywhere)
 	float CrossHairYLocation = 0.333333f;
 
+	UFUNCTION()
+	void OnPossessedTankGameOver();
 protected:
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "Setup")
@@ -46,4 +48,8 @@ private:
 	bool GetLookVectorHitLocation(FVector& LookDirection,FVector& HitLocation) const;
 
 	float LineTraceRange = 1000000.f;
+
+	virtual void SetPawn(APawn * InPawn) override;
+
+	
 };
